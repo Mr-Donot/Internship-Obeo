@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/fr.obeo.fileexplorer/src-gen" creationIcons="false"
+    editDirectory="/fr.obeo.fileexplorer.edit/src-gen" editorDirectory="/fr.obeo.fileexplorer.editor/src-gen"
+    modelPluginID="fr.obeo.fileexplorer" modelName="Fileexplorer" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
+    copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>fileexplorer.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="Fileexplorer" basePackage="fr.obeo.fileexplorer" disposableProviderFactory="true"
+      ecorePackage="fileexplorer.ecore#/">
+    <genClasses ecoreClass="fileexplorer.ecore#//File">
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference fileexplorer.ecore#//File/parent"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference fileexplorer.ecore#//File/content"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference fileexplorer.ecore#//File/extension"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute fileexplorer.ecore#//File/name"/>
+    </genClasses>
+    <genClasses ecoreClass="fileexplorer.ecore#//Content">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute fileexplorer.ecore#//Content/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute fileexplorer.ecore#//Content/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute fileexplorer.ecore#//Content/container"/>
+    </genClasses>
+    <genClasses ecoreClass="fileexplorer.ecore#//Extension">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute fileexplorer.ecore#//Extension/name"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
