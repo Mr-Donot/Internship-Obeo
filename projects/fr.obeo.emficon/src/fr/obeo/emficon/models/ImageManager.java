@@ -43,7 +43,7 @@ public class ImageManager {
 		ImageDescriptor imageDescriptor = ImageDescriptor.createFromImageData(imageData);
 		Image image = imageDescriptor.createImage();
 		
-		EMFIcon emficon = new EMFIcon(pathIcon, image, false);
+		EMFIcon emficon = new EMFIcon(pathIcon, image);
 		return emficon;
 	}
 	
@@ -76,7 +76,6 @@ public class ImageManager {
 	public Image getImage(String s) {
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
 			if (pair.getKey().equals(s)) {
-				imageMap.get(s).setUsed(true);
 				return imageMap.get(s).getImage();
 			}
 			
