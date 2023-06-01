@@ -135,10 +135,8 @@ public class ImageManager {
 		for (int i = 0; i < unusedIconsList.size() ; i++) {
 			File myObj = new File(unusedIconsList.get(i).getPath()); 
 			myObj.delete();
-			
+			this.imageMap.remove(unusedIconsList.get(i).getPath());
+			this.arrayFilesPath.remove(unusedIconsList.get(i).getPath());
 		}
-		
-		//TODO : delete those icons in map
-
 	}
 }
