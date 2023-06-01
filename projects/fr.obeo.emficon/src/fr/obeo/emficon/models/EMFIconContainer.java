@@ -7,10 +7,9 @@ import java.util.ArrayList;
 //custom container for the EMFIconView. Contains a resource and a list of unusedIcons
 public class EMFIconContainer {
 
-	
 	private Resource resource;
 	private ArrayList<EMFIcon> unusedIconList;
-	
+
 	public EMFIconContainer(Resource resource, ArrayList<EMFIcon> unusedIconList) {
 		this.resource = resource;
 		this.unusedIconList = unusedIconList;
@@ -31,5 +30,4 @@ public class EMFIconContainer {
 	public void setUnusedIconList(ArrayList<EMFIcon> unusedIconList) {
 		this.unusedIconList = unusedIconList;
 	}
-
 }

@@ -35,13 +35,13 @@ public class EMFIconViewer implements ISelectionListener{
 	private EMFIconView view = new EMFIconView();
 	private TreeViewer tree;
 	private IWorkspaceRoot root;
-	
+
 	public EMFIconViewer(EMFIconView view, Composite parent) {
 		this.view = view;
 		this.tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		this.root = ResourcesPlugin.getWorkspace().getRoot();
 	}
-	
+
 	//Update view by selecting ecore files
 	@Override
 	public void selectionChanged(IWorkbenchPart sourcepart, ISelection selection) {
@@ -59,7 +59,7 @@ public class EMFIconViewer implements ISelectionListener{
 			}
 		}
 	}
-	
+
 	public void updateTree(Resource resource, String editPluginID, ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
 		imageManager.loadImageMapByFolderPath(pathIcon);
@@ -88,7 +88,7 @@ public class EMFIconViewer implements ISelectionListener{
 	public void setTree(TreeViewer tree) {
 		this.tree = tree;
 	}
-	
+
 	//get the edit plugin-id with a genmodel file
 	public String getEditByFile(File genmodelFile, Resource resource) {
 		ResourceSet genModelResourceSet = new ResourceSetImpl();
@@ -104,8 +104,8 @@ public class EMFIconViewer implements ISelectionListener{
 			return "";
 		}
 	}
-	
-//return a Map<string, File>. strings are ecore file path, and files are the genmodel file associated to the ecore file
+
+	//return a Map<string, File>. strings are ecore file path, and files are the genmodel file associated to the ecore file
 	public Map<String, File> getEcorePaths(){
 		Map<String, File> result = new HashMap<String, File>();
 		try {
@@ -130,5 +130,4 @@ public class EMFIconViewer implements ISelectionListener{
 		}
 		return result;
 	}
-
 }

@@ -11,10 +11,10 @@ public class EMFIconContentProvider extends AdapterFactoryContentProvider{
 	public EMFIconContentProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
-	
+
 	@Override
 	public Object[] getElements(Object object) {
-	
+
 		if (object instanceof EMFIconContainer) {
 
 			EMFIconContainer unusedIcon = (EMFIconContainer) object;
@@ -28,10 +28,6 @@ public class EMFIconContentProvider extends AdapterFactoryContentProvider{
 		}
 		return super.getElements(object);
 	}
-
-	
-	
-
 }
 
 

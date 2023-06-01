@@ -21,48 +21,48 @@ public class ImageManager {
 	private Map<String, EMFIcon> imageMap = new HashMap<String, EMFIcon>();
 	private ArrayList<String> arrayFilesPath = new ArrayList<String>();
 	private Resource actualResource;
-	
-	
+
+
 	//load all the images on the input folder
 	//if they are already in the map, doesn't create a new image (cache)
 	public void loadImageMapByFolderPath(String folderPath) {
-		
+
 		loadFiles(new File(folderPath));
 		String pathIcon;
 		for (int i = 0 ; i < arrayFilesPath.size() ; i++) {
-			
+
 			pathIcon = arrayFilesPath.get(i);
 			EMFIcon emficon = this.imageMap.computeIfAbsent(pathIcon, s -> createImage(s));
 			this.imageMap.put(pathIcon, emficon);
 		}
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public EMFIcon createImage(String pathIcon) {
 		ImageData imageData = new ImageData(pathIcon);
 		ImageDescriptor imageDescriptor = ImageDescriptor.createFromImageData(imageData);
 		Image image = imageDescriptor.createImage();
-		
+
 		EMFIcon emficon = new EMFIcon(pathIcon, image);
 		return emficon;
 	}
-	
-	//Recursive function that browse the input item if it's a directory, otherwise add the folder to the arrayFilesPath
-		private void loadFiles(File file) {
-			if (!file.equals(null)) {
-				File files[];
-				if(file.isFile())
-					arrayFilesPath.add(file.getAbsolutePath().replace("\\", "/"));
-				else{
-					files = file.listFiles();
-					for (int i = 0; i < files.length; i++) {
-						loadFiles(files[i]);
-					}
-				}	
-			}
-		}
 
-	
+	//Recursive function that browse the input item if it's a directory, otherwise add the folder to the arrayFilesPath
+	private void loadFiles(File file) {
+		if (!file.equals(null)) {
+			File files[];
+			if(file.isFile())
+				arrayFilesPath.add(file.getAbsolutePath().replace("\\", "/"));
+			else{
+				files = file.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					loadFiles(files[i]);
+				}
+			}	
+		}
+	}
+
+
 	public ArrayList<String> getArrayFilesPath() {
 		return arrayFilesPath;
 	}
@@ -72,18 +72,16 @@ public class ImageManager {
 	}
 
 	//get the Image associated to the input string
-	//and change the corresponding boolean to true
 	public Image getImage(String s) {
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
 			if (pair.getKey().equals(s)) {
 				return imageMap.get(s).getImage();
 			}
-			
 		}
 		return null;
 	}
-	
-	
+
+
 	//scrap a resource to get all namedElement's name, then return all the EMFIcon which doesn't have their name on the name list
 	public ArrayList<EMFIcon> getUnusedIcons(Resource resource) {
 		actualResource = resource;
@@ -96,7 +94,7 @@ public class ImageManager {
 				nameList.add(eNamedElement.getName()+".gif");
 			}
 		}
-		
+
 		ArrayList<EMFIcon> result = new ArrayList<EMFIcon>();
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
 			String iconFileName = pair.getKey().substring(pair.getKey().lastIndexOf("/")+1);
@@ -112,7 +110,7 @@ public class ImageManager {
 		}	
 		return result;
 	}
-	
+
 	//only for debug
 	//TODO erase this function here, and only put it on a testing project
 	public void display() {
@@ -124,7 +122,7 @@ public class ImageManager {
 		System.out.println("-------------------------------------------");
 		System.out.println("image map : \n");
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
-		    System.out.println(pair.getKey() + " |--> " + pair.getValue());
+			System.out.println(pair.getKey() + " |--> " + pair.getValue());
 		}
 		System.out.println("===========================================");	
 	}

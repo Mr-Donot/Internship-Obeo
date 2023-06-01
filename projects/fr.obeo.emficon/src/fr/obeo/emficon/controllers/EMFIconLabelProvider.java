@@ -30,7 +30,6 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 		return super.getText(element);
 	}
 
-
 	@Override
 	public Image getImage(Object element) {
 		if (element instanceof EMFIcon) {

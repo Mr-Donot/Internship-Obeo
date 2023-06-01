@@ -7,7 +7,7 @@ public class EMFIcon {
 	private String path;
 	private Image image;
 
-	
+
 	public EMFIcon(String path, Image image) {
 		this.path = path;
 		this.image = image;
@@ -29,7 +29,6 @@ public class EMFIcon {
 		this.image = image;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "path : " + path.toString() + " | Image : " + image.toString();

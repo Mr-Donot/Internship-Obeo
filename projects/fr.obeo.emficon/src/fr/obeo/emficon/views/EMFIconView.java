@@ -69,8 +69,8 @@ public class EMFIconView extends ViewPart {
 	private EMFIconViewer viewer;
 	private ImageManager imageManager = new ImageManager();
 	private String actualEcorePath = "";
-	
-	
+
+
 
 	//Initial function
 	@Override
@@ -145,9 +145,9 @@ public class EMFIconView extends ViewPart {
 		cleanIconsAction.setText("Clean unused icons in this EMF");
 		cleanIconsAction.setToolTipText("Clean icons");
 		cleanIconsAction.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
-		
-		
+
+
+
 		actionSelectEcoreInList = new Action() {
 			public void run() {
 				try {
@@ -181,20 +181,16 @@ public class EMFIconView extends ViewPart {
 		MessageDialog.openInformation(treeViewer.getControl().getShell(), "Item selected", message);
 	}
 
+	//Create a message box to confirm the cleaning icons' choice
 	private void cleanIconMsgBox(Composite parent) {
 		if (!actualEcorePath.equals("")) {
-			boolean result =
-					MessageDialog.openConfirm(parent.getShell(), "Clean icons", "Do you want to delete all the unused icons ?");
-
+			boolean result = MessageDialog.openConfirm(parent.getShell(), "Clean icons", "Do you want to delete all the unused icons ?");
 			if (result){
 				this.imageManager.deleteUnusedIcons(actualEcorePath);
 				this.updateView(actualEcorePath);
-			} else {
-				// Cancel Button selected do something
 			}
 		}
 	}
-	
 
 	//Create a message box with the item's list in the input
 	private ElementListSelectionDialog createDialog(ArrayList<String> itemsList, Composite parent) {
@@ -218,12 +214,9 @@ public class EMFIconView extends ViewPart {
 
 	//Create a message box and get the returning answer, then update the view according to the selected ecore file
 	private void selectionMenuAndUpdateView(Composite parent) throws CoreException {
-		// create a msg box with all the project in the workspace
 		mapEcoreGenModel = viewer.getEcorePaths();
-
 		Iterator<?> it = mapEcoreGenModel.entrySet().iterator();
 		ArrayList<String> ecoreList = getKeys(it);
-
 		ElementListSelectionDialog dialog = createDialog(ecoreList, parent);
 		String ecorePath = dialog.getResult() != null ? (String) dialog.getResult()[0] : ""; // "" if selection canceled
 		if (ecorePath == "") {
@@ -238,7 +231,6 @@ public class EMFIconView extends ViewPart {
 		return resourceSet.getResource(fileURI, true);
 	}
 
-	
 	//update the view according to the ecore path in the input
 	public void updateView(String ecorePath) {
 		actualEcorePath = ecorePath;
