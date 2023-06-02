@@ -3,7 +3,6 @@ package fr.obeo.emficon.models;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -18,47 +17,36 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 
 import fr.obeo.emficon.controllers.EMFIconContentProvider;
 import fr.obeo.emficon.controllers.EMFIconLabelProvider;
-import fr.obeo.emficon.views.*;
+import fr.obeo.emficon.views.EMFIconView;
 
-public class EMFIconViewer implements ISelectionListener{
 
-	private EMFIconView view = new EMFIconView();
+/**
+ * Class that controls the view by updating the data shown.
+ * 
+ * @author fdaunay
+ *
+ */
+public class EMFIconViewer{
+
+
 	private TreeViewer tree;
 	private IWorkspaceRoot root;
 
 	public EMFIconViewer(EMFIconView view, Composite parent) {
-		this.view = view;
 		this.tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		this.root = ResourcesPlugin.getWorkspace().getRoot();
 	}
 
-	//Update view by selecting ecore files
-	@Override
-	public void selectionChanged(IWorkbenchPart sourcepart, ISelection selection) {
-		if (sourcepart != this && selection instanceof IStructuredSelection) {
-			List<?> selectionList = ((IStructuredSelection) selection).toList();
-			if (selectionList.size() > 0){
-				//case : ecore file selected
-				if (selectionList.get(0) instanceof IFile) {
-					IFile selectedFile = (IFile) selectionList.get(0);
-					if (selectedFile.getFileExtension().equals("ecore")) {
-						// format needed : /webpage/model/webpage.ecore
-						view.updateView(selectedFile.getFullPath().toString());
-					}
-				}
-			}
-		}
-	}
+	/**
+	 * Update view by selecting ecore files.
+	 */
+	
 
 	public void updateTree(Resource resource, String editPluginID, ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
@@ -73,13 +61,6 @@ public class EMFIconViewer implements ISelectionListener{
 		this.tree.refresh();
 	}
 
-	public EMFIconView getView() {
-		return view;
-	}
-
-	public void setView(EMFIconView view) {
-		this.view = view;
-	}
 
 	public TreeViewer getTree() {
 		return tree;
@@ -89,7 +70,10 @@ public class EMFIconViewer implements ISelectionListener{
 		this.tree = tree;
 	}
 
-	//get the edit plugin-id with a genmodel file
+	/**
+	 * Get the edit plugin-id with a genmodel file.
+	 */
+	
 	public String getEditByFile(File genmodelFile, Resource resource) {
 		ResourceSet genModelResourceSet = new ResourceSetImpl();
 		Resource genModelResource = genModelResourceSet.getResource(org.eclipse.emf.common.util.URI.createFileURI(genmodelFile.getAbsolutePath()), true);
@@ -105,7 +89,9 @@ public class EMFIconViewer implements ISelectionListener{
 		}
 	}
 
-	//return a Map<string, File>. strings are ecore file path, and files are the genmodel file associated to the ecore file
+	/**
+	 * Return a Map<string, File>. strings are ecore file path, and files are the genmodel file associated to the ecore file.
+	 */
 	public Map<String, File> getEcorePaths(){
 		Map<String, File> result = new HashMap<String, File>();
 		try {

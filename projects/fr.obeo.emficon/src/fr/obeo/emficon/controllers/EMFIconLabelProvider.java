@@ -2,6 +2,7 @@ package fr.obeo.emficon.controllers;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.ENamedElement;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.ENamedElementImpl;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -9,7 +10,11 @@ import org.eclipse.swt.graphics.Image;
 import fr.obeo.emficon.models.EMFIcon;
 import fr.obeo.emficon.models.ImageManager;
 
-//Extension of the AdapterFactoryLabelProvider supporting custom EMIcon
+/**
+ * Extension of the AdapterFactoryLabelProvider supporting custom EMIcon.
+ * 
+ * @author fdaunay
+ */
 public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 
 	private String iconPath;
@@ -25,7 +30,7 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 	public String getText(Object element) {	
 		if (element instanceof EMFIcon) {
 			EMFIcon emficon = (EMFIcon) element;
-			return emficon.getPath().substring(emficon.getPath().lastIndexOf("/")+1);
+			return emficon.getLabel();
 		}
 		return super.getText(element);
 	}
@@ -40,11 +45,10 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 			ENamedElement a = (ENamedElementImpl) element;
 			String pathIcon = this.iconPath + a.getName() + ".gif";
 			if (imageManager.getArrayFilesPath().contains(pathIcon)) {
-
 				return imageManager.getImage(pathIcon);
 			}	
 		}
-		return super.getImage(element);
+		return (element instanceof EPackage) ? super.getImage(element) : null;
 	}
 
 }

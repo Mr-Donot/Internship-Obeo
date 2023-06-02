@@ -3,19 +3,13 @@ package fr.obeo.emficon.views;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
+import javax.inject.Inject;
 
-
-import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -24,10 +18,33 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.part.DrillDownAdapter;
+import org.eclipse.ui.part.ViewPart;
 
-import fr.obeo.emficon.models.*;
-
-import javax.inject.Inject;
+import fr.obeo.emficon.models.EMFIconViewer;
+import fr.obeo.emficon.models.ImageManager;
 
 
 /**
@@ -69,10 +86,13 @@ public class EMFIconView extends ViewPart {
 	private EMFIconViewer viewer;
 	private ImageManager imageManager = new ImageManager();
 	private String actualEcorePath = "";
+	private ISelectionListener listener;
 
 
 
-	//Initial function
+	/**
+	 * Initial function.
+	 */
 	@Override
 	public void createPartControl(Composite parent) {
 
@@ -80,19 +100,37 @@ public class EMFIconView extends ViewPart {
 		treeViewer = viewer.getTree();
 		drillDownAdapter = new DrillDownAdapter(treeViewer);
 
-		// Create the help context id for the viewer's control
 		workbench.getHelpSystem().setHelp(treeViewer.getControl(), "treePlugin.viewer");
 		getSite().setSelectionProvider(treeViewer);
 		makeActions(parent);
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
-
-		//Permet de sélectionner un fichier ecore dans le package explorer pour updater la view
-		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(viewer);
+		listener = new ISelectionListener() {
+			@Override
+			public void selectionChanged(IWorkbenchPart sourcepart, ISelection selection) {
+				if (sourcepart != this && selection instanceof IStructuredSelection) {
+					List<?> selectionList = ((IStructuredSelection) selection).toList();
+					if (!selectionList.isEmpty()){
+						//case : ecore file selected
+						if (selectionList.get(0) instanceof IFile) {
+							IFile selectedFile = (IFile) selectionList.get(0);
+							if (selectedFile.getFileExtension().equals("ecore")) {
+								// format needed : /webpage/model/webpage.ecore
+								updateView(selectedFile.getFullPath().toString());
+							}
+						}
+					}
+				}
+			}
+		};
+		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(listener);
 
 	}
 
+	
+	
+	
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -123,7 +161,6 @@ public class EMFIconView extends ViewPart {
 		manager.add(cleanIconsAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
-		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
@@ -134,7 +171,9 @@ public class EMFIconView extends ViewPart {
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
-	//Create the actions
+	/**
+	 * Create the actions
+	 */
 	private void makeActions(Composite parent) {
 
 		cleanIconsAction = new Action() {
@@ -181,7 +220,9 @@ public class EMFIconView extends ViewPart {
 		MessageDialog.openInformation(treeViewer.getControl().getShell(), "Item selected", message);
 	}
 
-	//Create a message box to confirm the cleaning icons' choice
+	/**
+	 * Create a message box to confirm the cleaning icons' choice.
+	 */
 	private void cleanIconMsgBox(Composite parent) {
 		if (!actualEcorePath.equals("")) {
 			boolean result = MessageDialog.openConfirm(parent.getShell(), "Clean icons", "Do you want to delete all the unused icons ?");
@@ -192,7 +233,9 @@ public class EMFIconView extends ViewPart {
 		}
 	}
 
-	//Create a message box with the item's list in the input
+	/**
+	 * Create a message box with the item's list in the input.
+	 */
 	private ElementListSelectionDialog createDialog(ArrayList<String> itemsList, Composite parent) {
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(parent.getShell(), new LabelProvider());
 		dialog.setElements(itemsList.toArray(new String[0]));
@@ -212,7 +255,9 @@ public class EMFIconView extends ViewPart {
 		return result;
 	}
 
-	//Create a message box and get the returning answer, then update the view according to the selected ecore file
+	/**
+	 * Create a message box and get the returning answer, then update the view according to the selected ecore file.
+	 */
 	private void selectionMenuAndUpdateView(Composite parent) throws CoreException {
 		mapEcoreGenModel = viewer.getEcorePaths();
 		Iterator<?> it = mapEcoreGenModel.entrySet().iterator();
