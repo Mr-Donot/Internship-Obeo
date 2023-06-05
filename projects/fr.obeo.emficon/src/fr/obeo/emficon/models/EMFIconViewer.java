@@ -72,6 +72,8 @@ public class EMFIconViewer{
 		this.tree = tree;
 	}
 
+
+	
 	/**
 	 * Get the edit plugin-id with a genmodel file.
 	 * @param genmodelFile the genmodel file.

@@ -24,12 +24,10 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
@@ -39,6 +37,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import fr.obeo.emficon.models.EMFIconViewer;
 import fr.obeo.emficon.models.ImageManager;
@@ -86,7 +85,6 @@ public class EMFIconView extends ViewPart {
 		viewer = new EMFIconViewer(this, parent);
 		treeViewer = viewer.getTree();
 
-		workbench.getHelpSystem().setHelp(treeViewer.getControl(), "treePlugin.viewer");
 		getSite().setSelectionProvider(treeViewer);
 		makeActions(parent);
 		hookContextMenu();
@@ -156,7 +154,6 @@ public class EMFIconView extends ViewPart {
 	 * Create the actions.
 	 * @param parent the initial composite.
 	 */
-	@SuppressWarnings("deprecation")
 	private void makeActions(Composite parent) {
 
 		cleanIconsAction = new Action() {
@@ -166,24 +163,18 @@ public class EMFIconView extends ViewPart {
 		};
 		cleanIconsAction.setText("Clean unused icons");
 		cleanIconsAction.setToolTipText("Clean unused icons");
-		String pathIconClean = "C:/dev/git/Internship-Obeo/projects/fr.obeo.emficon/icons/warning.gif";
-		ImageDescriptor imageDescriptorClean = ImageDescriptor.createFromImageData(new ImageData(pathIconClean));
-		cleanIconsAction
-				.setImageDescriptor(imageDescriptorClean);
+		cleanIconsAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/warning.gif"));
 
 		actionSelectEcoreInList = new Action() {
 			public void run() {
-			
 					selectionMenuAndUpdateView(parent);
 				
 			}
 		};
 		actionSelectEcoreInList.setText("Select ecore file");
 		actionSelectEcoreInList.setToolTipText("Select ecore file");
-		String pathIconSelect = "C:/dev/git/Internship-Obeo/projects/fr.obeo.emficon/icons/hierarchy.gif";
-		ImageDescriptor imageDescriptorSelect = ImageDescriptor.createFromImageData(new ImageData(pathIconSelect));
-		actionSelectEcoreInList
-				.setImageDescriptor(imageDescriptorSelect);
+		actionSelectEcoreInList.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/hierarchy.gif"));
+
 		
 	}
 
