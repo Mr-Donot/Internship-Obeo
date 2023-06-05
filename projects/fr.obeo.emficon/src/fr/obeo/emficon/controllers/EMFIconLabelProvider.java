@@ -32,7 +32,7 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 			EMFIcon emficon = (EMFIcon) element;
 			return emficon.getLabel();
 		}
-		return super.getText(element);
+		return (super.getText(element).split(":")[0]);
 	}
 
 	@Override

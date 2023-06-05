@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -25,43 +24,37 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
 import fr.obeo.emficon.models.EMFIconViewer;
 import fr.obeo.emficon.models.ImageManager;
 
-
 /**
- * This sample class demonstrates how to plug-in a new
- * workbench view. The view shows data obtained from the
- * model. The sample creates a dummy model on the fly,
- * but a real implementation would connect to the model
- * available either in this or another plug-in (e.g. the workspace).
- * The view is connected to the model using a content provider.
+ * This sample class demonstrates how to plug-in a new workbench view. The view
+ * shows data obtained from the model. The sample creates a dummy model on the
+ * fly, but a real implementation would connect to the model available either in
+ * this or another plug-in (e.g. the workspace). The view is connected to the
+ * model using a content provider.
  * <p>
- * The view uses a label provider to define how model
- * objects should be presented in the view. Each
- * view can present the same model objects using
- * different labels and icons, if needed. Alternatively,
- * a single label provider can be shared between views
- * in order to ensure that objects of the same type are
- * presented in the same way everywhere.
+ * The view uses a label provider to define how model objects should be
+ * presented in the view. Each view can present the same model objects using
+ * different labels and icons, if needed. Alternatively, a single label provider
+ * can be shared between views in order to ensure that objects of the same type
+ * are presented in the same way everywhere.
  * <p>
  */
 
@@ -76,10 +69,8 @@ public class EMFIconView extends ViewPart {
 	IWorkbench workbench;
 
 	private TreeViewer treeViewer;
-	private DrillDownAdapter drillDownAdapter;
 	private Action cleanIconsAction;
 	private Action actionSelectEcoreInList;
-	private Action doubleClickAction;
 	private Map<String, File> mapEcoreGenModel;
 	private IWorkspace workspace = ResourcesPlugin.getWorkspace();
 	private IWorkspaceRoot root = workspace.getRoot();
@@ -89,30 +80,24 @@ public class EMFIconView extends ViewPart {
 	private ISelectionListener listener;
 
 
-
-	/**
-	 * Initial function.
-	 */
 	@Override
 	public void createPartControl(Composite parent) {
 
 		viewer = new EMFIconViewer(this, parent);
 		treeViewer = viewer.getTree();
-		drillDownAdapter = new DrillDownAdapter(treeViewer);
 
 		workbench.getHelpSystem().setHelp(treeViewer.getControl(), "treePlugin.viewer");
 		getSite().setSelectionProvider(treeViewer);
 		makeActions(parent);
 		hookContextMenu();
-		hookDoubleClickAction();
 		contributeToActionBars();
 		listener = new ISelectionListener() {
 			@Override
 			public void selectionChanged(IWorkbenchPart sourcepart, ISelection selection) {
 				if (sourcepart != this && selection instanceof IStructuredSelection) {
 					List<?> selectionList = ((IStructuredSelection) selection).toList();
-					if (!selectionList.isEmpty()){
-						//case : ecore file selected
+					if (!selectionList.isEmpty()) {
+						// case : ecore file selected
 						if (selectionList.get(0) instanceof IFile) {
 							IFile selectedFile = (IFile) selectionList.get(0);
 							if (selectedFile.getFileExtension().equals("ecore")) {
@@ -128,9 +113,6 @@ public class EMFIconView extends ViewPart {
 
 	}
 
-	
-	
-	
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -160,7 +142,6 @@ public class EMFIconView extends ViewPart {
 		manager.add(actionSelectEcoreInList);
 		manager.add(cleanIconsAction);
 		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
@@ -168,12 +149,14 @@ public class EMFIconView extends ViewPart {
 		manager.add(actionSelectEcoreInList);
 		manager.add(cleanIconsAction);
 		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
 	}
 
+
 	/**
-	 * Create the actions
+	 * Create the actions.
+	 * @param parent the initial composite.
 	 */
+	@SuppressWarnings("deprecation")
 	private void makeActions(Composite parent) {
 
 		cleanIconsAction = new Action() {
@@ -181,52 +164,38 @@ public class EMFIconView extends ViewPart {
 				cleanIconMsgBox(parent);
 			}
 		};
-		cleanIconsAction.setText("Clean unused icons in this EMF");
-		cleanIconsAction.setToolTipText("Clean icons");
-		cleanIconsAction.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
-
+		cleanIconsAction.setText("Clean unused icons");
+		cleanIconsAction.setToolTipText("Clean unused icons");
+		String pathIconClean = "C:/dev/programs/modeling/modeling-2023-03/eclipse/workspace/fr.obeo.emficon/icons/warning.gif";
+		ImageDescriptor imageDescriptorClean = ImageDescriptor.createFromImageData(new ImageData(pathIconClean));
+		cleanIconsAction
+				.setImageDescriptor(imageDescriptorClean);
 
 		actionSelectEcoreInList = new Action() {
 			public void run() {
-				try {
+			
 					selectionMenuAndUpdateView(parent);
-				} catch (CoreException e) {
-					e.printStackTrace();
-				}
+				
 			}
 		};
-		actionSelectEcoreInList.setText("change view by ecore");
-		actionSelectEcoreInList.setToolTipText("change view tooltip");
-		actionSelectEcoreInList.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
-				IStructuredSelection selection = treeViewer.getStructuredSelection();
-				Object obj = selection.getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
-			}
-		};
-	}
-
-	private void hookDoubleClickAction() {
-		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
-	}
-
-	private void showMessage(String message) {
-		MessageDialog.openInformation(treeViewer.getControl().getShell(), "Item selected", message);
+		actionSelectEcoreInList.setText("Select ecore file");
+		actionSelectEcoreInList.setToolTipText("Select ecore file");
+		String pathIconSelect = "C:/dev/programs/modeling/modeling-2023-03/eclipse/workspace/fr.obeo.emficon/icons/hierarchy.gif";
+		ImageDescriptor imageDescriptorSelect = ImageDescriptor.createFromImageData(new ImageData(pathIconSelect));
+		actionSelectEcoreInList
+				.setImageDescriptor(imageDescriptorSelect);
+		
 	}
 
 	/**
 	 * Create a message box to confirm the cleaning icons' choice.
+	 * @param parent the initial composite.
 	 */
 	private void cleanIconMsgBox(Composite parent) {
 		if (!actualEcorePath.equals("")) {
-			boolean result = MessageDialog.openConfirm(parent.getShell(), "Clean icons", "Do you want to delete all the unused icons ?");
-			if (result){
+			boolean result = MessageDialog.openConfirm(parent.getShell(), "Clean icons",
+					"Do you want to delete all the unused icons ?");
+			if (result) {
 				this.imageManager.deleteUnusedIcons(actualEcorePath);
 				this.updateView(actualEcorePath);
 			}
@@ -235,6 +204,10 @@ public class EMFIconView extends ViewPart {
 
 	/**
 	 * Create a message box with the item's list in the input.
+	 * 
+	 * @param itemsList an item list of all the ecore files to show.
+	 * @param parent the initial composite.
+	 * @return the selected result.
 	 */
 	private ElementListSelectionDialog createDialog(ArrayList<String> itemsList, Composite parent) {
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(parent.getShell(), new LabelProvider());
@@ -246,19 +219,21 @@ public class EMFIconView extends ViewPart {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> getKeys(Iterator<?> it){
+	private ArrayList<String> getKeys(Iterator<?> it) {
 		ArrayList<String> result = new ArrayList<String>();
 		while (it.hasNext()) {
-			Map.Entry<String, File> entry = (Entry<String, File>)it.next();
+			Map.Entry<String, File> entry = (Entry<String, File>) it.next();
 			result.add(entry.getKey());
 		}
 		return result;
 	}
 
+
 	/**
 	 * Create a message box and get the returning answer, then update the view according to the selected ecore file.
+	 * @param parent the initial composite.
 	 */
-	private void selectionMenuAndUpdateView(Composite parent) throws CoreException {
+	private void selectionMenuAndUpdateView(Composite parent){
 		mapEcoreGenModel = viewer.getEcorePaths();
 		Iterator<?> it = mapEcoreGenModel.entrySet().iterator();
 		ArrayList<String> ecoreList = getKeys(it);
@@ -276,7 +251,11 @@ public class EMFIconView extends ViewPart {
 		return resourceSet.getResource(fileURI, true);
 	}
 
-	//update the view according to the ecore path in the input
+
+	/**
+	 * Update the view according to the ecore path in the input.
+	 * @param ecorePath the ecore file's path choosen in the selection dialog.
+	 */
 	public void updateView(String ecorePath) {
 		actualEcorePath = ecorePath;
 		imageManager = new ImageManager();

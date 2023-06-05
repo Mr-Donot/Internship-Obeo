@@ -45,9 +45,10 @@ public class EMFIconViewer{
 
 	/**
 	 * Update view by selecting ecore files.
+	 * @param resource EMF container.
+	 * @param editPluginID plugin id of the genmodel.
+	 * @param imageManager image cache.
 	 */
-	
-
 	public void updateTree(Resource resource, String editPluginID, ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
 		imageManager.loadImageMapByFolderPath(pathIcon);
@@ -58,6 +59,7 @@ public class EMFIconViewer{
 		this.tree.setContentProvider(contentProvider);
 		this.tree.setLabelProvider(labelProvider);
 		this.tree.setInput(unusedIcon);
+		this.tree.expandAll();
 		this.tree.refresh();
 	}
 
@@ -72,8 +74,10 @@ public class EMFIconViewer{
 
 	/**
 	 * Get the edit plugin-id with a genmodel file.
+	 * @param genmodelFile the genmodel file.
+	 * @param resource EMF container.
+	 * @return plugin id of the genmodel file.
 	 */
-	
 	public String getEditByFile(File genmodelFile, Resource resource) {
 		ResourceSet genModelResourceSet = new ResourceSetImpl();
 		Resource genModelResource = genModelResourceSet.getResource(org.eclipse.emf.common.util.URI.createFileURI(genmodelFile.getAbsolutePath()), true);
@@ -91,6 +95,7 @@ public class EMFIconViewer{
 
 	/**
 	 * Return a Map<string, File>. strings are ecore file path, and files are the genmodel file associated to the ecore file.
+	 * @return a map of ecore path as key and genmodel file as value
 	 */
 	public Map<String, File> getEcorePaths(){
 		Map<String, File> result = new HashMap<String, File>();

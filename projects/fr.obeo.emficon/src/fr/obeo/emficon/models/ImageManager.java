@@ -29,7 +29,7 @@ public class ImageManager {
 
 	/**
 	 * load all the images on the input folder, if they are already in the map, doesn't create a new image (cache).
-	 * 
+	 * @param folderPath the folder's path that contains the images to load.
 	 */
 	public void loadImageMapByFolderPath(String folderPath) {
 
@@ -54,6 +54,7 @@ public class ImageManager {
 
 	/**
 	 * Recursive function that browse the input item if it's a directory, otherwise add the folder to the arrayFilesPath.
+	 * @param file to browse.
 	 */
 	private void loadFiles(File file) {
 		if (!file.equals(null)) {
@@ -79,7 +80,9 @@ public class ImageManager {
 	}
 
 	/**
-	 * get the Image associated to the input string
+	 * get the Image associated to the input string.
+	 * @param s the image name.
+	 * @return the image if it exists in the map, otherwise null.
 	 */
 	public Image getImage(String s) {
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
@@ -93,6 +96,8 @@ public class ImageManager {
 
 	/**
 	 * scrap a resource to get all namedElement's name, then return all the EMFIcon which doesn't have their name on the name list.
+	 * @param resource EMF container.
+	 * @return a array list of EMFIcon.
 	 */
 	public ArrayList<EMFIcon> getUnusedIcons(Resource resource) {
 		actualResource = resource;
