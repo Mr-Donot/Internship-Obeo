@@ -166,7 +166,7 @@ public class EMFIconView extends ViewPart {
 		};
 		cleanIconsAction.setText("Clean unused icons");
 		cleanIconsAction.setToolTipText("Clean unused icons");
-		String pathIconClean = "C:/dev/programs/modeling/modeling-2023-03/eclipse/workspace/fr.obeo.emficon/icons/warning.gif";
+		String pathIconClean = "C:/dev/git/Internship-Obeo/projects/fr.obeo.emficon/icons/warning.gif";
 		ImageDescriptor imageDescriptorClean = ImageDescriptor.createFromImageData(new ImageData(pathIconClean));
 		cleanIconsAction
 				.setImageDescriptor(imageDescriptorClean);
@@ -180,7 +180,7 @@ public class EMFIconView extends ViewPart {
 		};
 		actionSelectEcoreInList.setText("Select ecore file");
 		actionSelectEcoreInList.setToolTipText("Select ecore file");
-		String pathIconSelect = "C:/dev/programs/modeling/modeling-2023-03/eclipse/workspace/fr.obeo.emficon/icons/hierarchy.gif";
+		String pathIconSelect = "C:/dev/git/Internship-Obeo/projects/fr.obeo.emficon/icons/hierarchy.gif";
 		ImageDescriptor imageDescriptorSelect = ImageDescriptor.createFromImageData(new ImageData(pathIconSelect));
 		actionSelectEcoreInList
 				.setImageDescriptor(imageDescriptorSelect);
