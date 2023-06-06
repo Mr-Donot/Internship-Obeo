@@ -15,7 +15,7 @@ import fr.obeo.emficon.models.ImageManager;
  * 
  * @author fdaunay
  */
-public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
+public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 
 	private String iconPath;
 	private ImageManager imageManager;
@@ -27,7 +27,7 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 	}
 
 	@Override
-	public String getText(Object element) {	
+	public String getText(Object element) {
 		if (element instanceof EMFIcon) {
 			EMFIcon emficon = (EMFIcon) element;
 			return emficon.getLabel();
@@ -46,7 +46,7 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider{
 			String pathIcon = this.iconPath + a.getName() + ".gif";
 			if (imageManager.getArrayFilesPath().contains(pathIcon)) {
 				return imageManager.getImage(pathIcon);
-			}	
+			}
 		}
 		return (element instanceof EPackage) ? super.getImage(element) : null;
 	}

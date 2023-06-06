@@ -14,7 +14,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 
-
 /**
  * Image cache.
  * 
@@ -26,16 +25,17 @@ public class ImageManager {
 	private ArrayList<String> arrayFilesPath = new ArrayList<String>();
 	private Resource actualResource;
 
-
 	/**
-	 * load all the images on the input folder, if they are already in the map, doesn't create a new image (cache).
+	 * load all the images on the input folder, if they are already in the map,
+	 * doesn't create a new image (cache).
+	 * 
 	 * @param folderPath the folder's path that contains the images to load.
 	 */
 	public void loadImageMapByFolderPath(String folderPath) {
 
 		loadFiles(new File(folderPath));
 		String pathIcon;
-		for (int i = 0 ; i < arrayFilesPath.size() ; i++) {
+		for (int i = 0; i < arrayFilesPath.size(); i++) {
 			pathIcon = arrayFilesPath.get(i);
 			EMFIcon emficon = this.imageMap.computeIfAbsent(pathIcon, s -> createImage(s));
 			this.imageMap.put(pathIcon, emficon);
@@ -53,23 +53,24 @@ public class ImageManager {
 	}
 
 	/**
-	 * Recursive function that browse the input item if it's a directory, otherwise add the folder to the arrayFilesPath.
+	 * Recursive function that browse the input item if it's a directory, otherwise
+	 * add the folder to the arrayFilesPath.
+	 * 
 	 * @param file to browse.
 	 */
 	private void loadFiles(File file) {
 		if (!file.equals(null)) {
 			File files[];
-			if(file.isFile())
+			if (file.isFile())
 				arrayFilesPath.add(file.getAbsolutePath().replace("\\", "/"));
-			else{
+			else {
 				files = file.listFiles();
 				for (int i = 0; i < files.length; i++) {
 					loadFiles(files[i]);
 				}
-			}	
+			}
 		}
 	}
-
 
 	public ArrayList<String> getArrayFilesPath() {
 		return arrayFilesPath;
@@ -81,6 +82,7 @@ public class ImageManager {
 
 	/**
 	 * get the Image associated to the input string.
+	 * 
 	 * @param s the image name.
 	 * @return the image if it exists in the map, otherwise null.
 	 */
@@ -93,9 +95,10 @@ public class ImageManager {
 		return null;
 	}
 
-
 	/**
-	 * scrap a resource to get all namedElement's name, then return all the EMFIcon which doesn't have their name on the name list.
+	 * scrap a resource to get all namedElement's name, then return all the EMFIcon
+	 * which doesn't have their name on the name list.
+	 * 
 	 * @param resource EMF container.
 	 * @return a array list of EMFIcon.
 	 */
@@ -107,7 +110,7 @@ public class ImageManager {
 			EObject eObject = eListObject.next();
 			if (eObject instanceof ENamedElement) {
 				ENamedElementImpl eNamedElement = (ENamedElementImpl) eObject;
-				nameList.add(eNamedElement.getName()+".gif");
+				nameList.add(eNamedElement.getName() + ".gif");
 			}
 		}
 
@@ -115,7 +118,7 @@ public class ImageManager {
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
 			String iconFileName = pair.getValue().getLabel();
 			boolean beUsed = false;
-			for (int i = 0 ; i < nameList.size() ; i++) {
+			for (int i = 0; i < nameList.size(); i++) {
 				if (nameList.get(i).equals(iconFileName)) {
 					beUsed = true;
 				}
@@ -123,28 +126,28 @@ public class ImageManager {
 			if (!beUsed) {
 				result.add(pair.getValue());
 			}
-		}	
+		}
 		return result;
 	}
 
 	public void display() {
 		System.out.println("===========DISPLAY IMAGE MANAGER===========");
 		System.out.println("List of files : \n");
-		for (int i = 0 ; i < this.arrayFilesPath.size() ; i++) {
-			System.out.println(i + " : " +this.arrayFilesPath.get(i));
+		for (int i = 0; i < this.arrayFilesPath.size(); i++) {
+			System.out.println(i + " : " + this.arrayFilesPath.get(i));
 		}
 		System.out.println("-------------------------------------------");
 		System.out.println("image map : \n");
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
 			System.out.println(pair.getKey() + " |--> " + pair.getValue());
 		}
-		System.out.println("===========================================");	
+		System.out.println("===========================================");
 	}
 
 	public void deleteUnusedIcons(String actualEcorePath) {
 		ArrayList<EMFIcon> unusedIconsList = this.getUnusedIcons(this.actualResource);
-		for (int i = 0; i < unusedIconsList.size() ; i++) {
-			File myObj = new File(unusedIconsList.get(i).getPath()); 
+		for (int i = 0; i < unusedIconsList.size(); i++) {
+			File myObj = new File(unusedIconsList.get(i).getPath());
 			myObj.delete();
 			this.imageMap.remove(unusedIconsList.get(i).getPath());
 			this.arrayFilesPath.remove(unusedIconsList.get(i).getPath());

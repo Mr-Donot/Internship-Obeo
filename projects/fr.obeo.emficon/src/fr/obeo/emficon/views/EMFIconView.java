@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
@@ -77,7 +79,6 @@ public class EMFIconView extends ViewPart {
 	private ImageManager imageManager = new ImageManager();
 	private String actualEcorePath = "";
 	private ISelectionListener listener;
-
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -149,9 +150,9 @@ public class EMFIconView extends ViewPart {
 		manager.add(new Separator());
 	}
 
-
 	/**
 	 * Create the actions.
+	 * 
 	 * @param parent the initial composite.
 	 */
 	private void makeActions(Composite parent) {
@@ -164,22 +165,24 @@ public class EMFIconView extends ViewPart {
 		cleanIconsAction.setText("Clean unused icons");
 		cleanIconsAction.setToolTipText("Clean unused icons");
 		cleanIconsAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/warning.gif"));
+		cleanIconsAction.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
 
 		actionSelectEcoreInList = new Action() {
 			public void run() {
-					selectionMenuAndUpdateView(parent);
-				
+				selectionMenuAndUpdateView(parent);
+
 			}
 		};
 		actionSelectEcoreInList.setText("Select ecore file");
 		actionSelectEcoreInList.setToolTipText("Select ecore file");
-		actionSelectEcoreInList.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/hierarchy.gif"));
+		actionSelectEcoreInList.setImageDescriptor(
+				AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/hierarchy.gif"));
 
-		
 	}
 
 	/**
 	 * Create a message box to confirm the cleaning icons' choice.
+	 * 
 	 * @param parent the initial composite.
 	 */
 	private void cleanIconMsgBox(Composite parent) {
@@ -197,7 +200,7 @@ public class EMFIconView extends ViewPart {
 	 * Create a message box with the item's list in the input.
 	 * 
 	 * @param itemsList an item list of all the ecore files to show.
-	 * @param parent the initial composite.
+	 * @param parent    the initial composite.
 	 * @return the selected result.
 	 */
 	private ElementListSelectionDialog createDialog(ArrayList<String> itemsList, Composite parent) {
@@ -219,12 +222,13 @@ public class EMFIconView extends ViewPart {
 		return result;
 	}
 
-
 	/**
-	 * Create a message box and get the returning answer, then update the view according to the selected ecore file.
+	 * Create a message box and get the returning answer, then update the view
+	 * according to the selected ecore file.
+	 * 
 	 * @param parent the initial composite.
 	 */
-	private void selectionMenuAndUpdateView(Composite parent){
+	private void selectionMenuAndUpdateView(Composite parent) {
 		mapEcoreGenModel = viewer.getEcorePaths();
 		Iterator<?> it = mapEcoreGenModel.entrySet().iterator();
 		ArrayList<String> ecoreList = getKeys(it);
@@ -242,9 +246,9 @@ public class EMFIconView extends ViewPart {
 		return resourceSet.getResource(fileURI, true);
 	}
 
-
 	/**
 	 * Update the view according to the ecore path in the input.
+	 * 
 	 * @param ecorePath the ecore file's path choosen in the selection dialog.
 	 */
 	public void updateView(String ecorePath) {
@@ -252,11 +256,22 @@ public class EMFIconView extends ViewPart {
 		imageManager = new ImageManager();
 		mapEcoreGenModel = viewer.getEcorePaths();
 		Resource resource = createResourceFromEcorePath(ecorePath);
-		File genmodelFile = mapEcoreGenModel.get(ecorePath);
-		String editPluginID = viewer.getEditByFile(genmodelFile, resource);
-		if (editPluginID != "") {
-			viewer.updateTree(resource, editPluginID, imageManager);
+		IProject[] projectList = root.getProjects();
+		for (IProject project : projectList) {
+			File fileTemp = new File(ecorePath);
+			String projectFilePath = fileTemp.getParentFile().getParentFile().getName(); 
+			String projectEditFilePath = projectFilePath + ".edit";
+			
+			if (project.getName().equals(projectEditFilePath)) {
+				File genmodelFile = mapEcoreGenModel.get(ecorePath);
+				String editPluginID = viewer.getEditByFile(genmodelFile, resource);
+				if (editPluginID != "") {
+					viewer.updateTree(resource, editPluginID, imageManager);
+					break;
+				}
+			}		
 		}
+			
 	}
 
 	@Override

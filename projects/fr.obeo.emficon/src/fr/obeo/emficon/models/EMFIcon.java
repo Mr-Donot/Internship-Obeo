@@ -14,11 +14,10 @@ public class EMFIcon {
 	private Image image;
 	private String label;
 
-
 	public EMFIcon(String path, Image image) {
 		this.path = path;
 		this.image = image;
-		label = this.path.substring(this.path.lastIndexOf("/")+1);
+		label = this.path.substring(this.path.lastIndexOf("/") + 1);
 	}
 
 	public String getPath() {

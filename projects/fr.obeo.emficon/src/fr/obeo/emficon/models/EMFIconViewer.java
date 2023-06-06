@@ -13,11 +13,15 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.codegen.ecore.genmodel.GenModel;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -25,15 +29,13 @@ import fr.obeo.emficon.controllers.EMFIconContentProvider;
 import fr.obeo.emficon.controllers.EMFIconLabelProvider;
 import fr.obeo.emficon.views.EMFIconView;
 
-
 /**
  * Class that controls the view by updating the data shown.
  * 
  * @author fdaunay
  *
  */
-public class EMFIconViewer{
-
+public class EMFIconViewer {
 
 	private TreeViewer tree;
 	private IWorkspaceRoot root;
@@ -45,7 +47,8 @@ public class EMFIconViewer{
 
 	/**
 	 * Update view by selecting ecore files.
-	 * @param resource EMF container.
+	 * 
+	 * @param resource     EMF container.
 	 * @param editPluginID plugin id of the genmodel.
 	 * @param imageManager image cache.
 	 */
@@ -53,16 +56,23 @@ public class EMFIconViewer{
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
 		imageManager.loadImageMapByFolderPath(pathIcon);
 		EMFIconContainer unusedIcon = new EMFIconContainer(resource, imageManager.getUnusedIcons(resource));
-		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
+				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		EMFIconContentProvider contentProvider = new EMFIconContentProvider(composedAdapterFactory);
 		EMFIconLabelProvider labelProvider = new EMFIconLabelProvider(composedAdapterFactory, pathIcon, imageManager);
+		tree.setFilters(new ViewerFilter() {
+			
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				return element instanceof EPackage || (element instanceof EClass && !((EClass) element).isAbstract());
+			}
+		});
 		this.tree.setContentProvider(contentProvider);
 		this.tree.setLabelProvider(labelProvider);
 		this.tree.setInput(unusedIcon);
 		this.tree.expandAll();
 		this.tree.refresh();
 	}
-
 
 	public TreeViewer getTree() {
 		return tree;
@@ -72,17 +82,17 @@ public class EMFIconViewer{
 		this.tree = tree;
 	}
 
-
-	
 	/**
 	 * Get the edit plugin-id with a genmodel file.
+	 * 
 	 * @param genmodelFile the genmodel file.
-	 * @param resource EMF container.
+	 * @param resource     EMF container.
 	 * @return plugin id of the genmodel file.
 	 */
 	public String getEditByFile(File genmodelFile, Resource resource) {
 		ResourceSet genModelResourceSet = new ResourceSetImpl();
-		Resource genModelResource = genModelResourceSet.getResource(org.eclipse.emf.common.util.URI.createFileURI(genmodelFile.getAbsolutePath()), true);
+		Resource genModelResource = genModelResourceSet
+				.getResource(org.eclipse.emf.common.util.URI.createFileURI(genmodelFile.getAbsolutePath()), true);
 
 		try {
 			genModelResource.load(null);
@@ -96,10 +106,12 @@ public class EMFIconViewer{
 	}
 
 	/**
-	 * Return a Map<string, File>. strings are ecore file path, and files are the genmodel file associated to the ecore file.
+	 * Return a Map<string, File>. strings are ecore file path, and files are the
+	 * genmodel file associated to the ecore file.
+	 * 
 	 * @return a map of ecore path as key and genmodel file as value
 	 */
-	public Map<String, File> getEcorePaths(){
+	public Map<String, File> getEcorePaths() {
 		Map<String, File> result = new HashMap<String, File>();
 		try {
 			root.accept(new IResourceVisitor() {
