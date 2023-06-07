@@ -72,7 +72,8 @@ public class EMFIconView extends ViewPart {
 
 	private TreeViewer treeViewer;
 	private Action cleanIconsAction;
-	private Action actionSelectEcoreInList;
+	private Action selectEcoreAction;
+	private Action refreshViewAction;
 	private Map<String, File> mapEcoreGenModel;
 	private IWorkspace workspace = ResourcesPlugin.getWorkspace();
 	private IWorkspaceRoot root = workspace.getRoot();
@@ -134,19 +135,22 @@ public class EMFIconView extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(new Separator());
-		manager.add(actionSelectEcoreInList);
+		manager.add(refreshViewAction);
+		manager.add(selectEcoreAction);
 		manager.add(cleanIconsAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(actionSelectEcoreInList);
+		manager.add(refreshViewAction);
+		manager.add(selectEcoreAction);
 		manager.add(cleanIconsAction);
 		manager.add(new Separator());
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(actionSelectEcoreInList);
+		manager.add(refreshViewAction);
+		manager.add(selectEcoreAction);
 		manager.add(cleanIconsAction);
 		manager.add(new Separator());
 	}
@@ -166,20 +170,28 @@ public class EMFIconView extends ViewPart {
 		cleanIconsAction.setText("Clean unused icons");
 		cleanIconsAction.setToolTipText("Clean unused icons");
 		cleanIconsAction
-		.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/warning.gif"));
-		cleanIconsAction
-		.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
+				.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
 
-		actionSelectEcoreInList = new Action() {
+		selectEcoreAction = new Action() {
 			public void run() {
 				selectionMenuAndUpdateView(parent);
 
 			}
 		};
-		actionSelectEcoreInList.setText("Select ecore file");
-		actionSelectEcoreInList.setToolTipText("Select ecore file");
-		actionSelectEcoreInList.setImageDescriptor(
+		selectEcoreAction.setText("Select ecore file");
+		selectEcoreAction.setToolTipText("Select ecore file");
+		selectEcoreAction.setImageDescriptor(
 				AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/hierarchy.gif"));
+
+		refreshViewAction = new Action() {
+			public void run() {
+				updateView(actualEcorePath);
+			}
+		};
+		refreshViewAction.setText("Refresh View");
+		refreshViewAction.setToolTipText("Refresh View");
+		refreshViewAction
+				.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
 	}
 
