@@ -191,7 +191,7 @@ public class EMFIconView extends ViewPart {
 		refreshViewAction.setText("Refresh View");
 		refreshViewAction.setToolTipText("Refresh View");
 		refreshViewAction
-				.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+				.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_SYNCED));
 
 	}
 
@@ -248,7 +248,7 @@ public class EMFIconView extends ViewPart {
 		Iterator<?> it = mapEcoreGenModel.entrySet().iterator();
 		ArrayList<String> ecoreList = getKeys(it);
 		ElementListSelectionDialog dialog = createDialog(ecoreList, parent);
-		String ecorePath = dialog.getResult() != null ? (String) dialog.getResult()[0] : ""; // "" if selection canceled
+		String ecorePath = dialog.getResult() != null ? (String) dialog.getResult()[0] : "";
 		if (ecorePath == "") {
 			return;
 		}
@@ -286,7 +286,6 @@ public class EMFIconView extends ViewPart {
 				}
 			}
 		}
-
 	}
 
 	@Override
