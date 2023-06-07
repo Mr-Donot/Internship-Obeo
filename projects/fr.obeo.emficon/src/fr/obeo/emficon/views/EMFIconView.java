@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -164,8 +165,10 @@ public class EMFIconView extends ViewPart {
 		};
 		cleanIconsAction.setText("Clean unused icons");
 		cleanIconsAction.setToolTipText("Clean unused icons");
-		cleanIconsAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/warning.gif"));
-		cleanIconsAction.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
+		cleanIconsAction
+		.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("fr.obeo.emficon", "icons/warning.gif"));
+		cleanIconsAction
+		.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
 
 		actionSelectEcoreInList = new Action() {
 			public void run() {
@@ -259,19 +262,31 @@ public class EMFIconView extends ViewPart {
 		IProject[] projectList = root.getProjects();
 		for (IProject project : projectList) {
 			File fileTemp = new File(ecorePath);
-			String projectFilePath = fileTemp.getParentFile().getParentFile().getName(); 
+			String projectFilePath = fileTemp.getParentFile().getParentFile().getName();
 			String projectEditFilePath = projectFilePath + ".edit";
-			
+
 			if (project.getName().equals(projectEditFilePath)) {
 				File genmodelFile = mapEcoreGenModel.get(ecorePath);
 				String editPluginID = viewer.getEditByFile(genmodelFile, resource);
 				if (editPluginID != "") {
-					viewer.updateTree(resource, editPluginID, imageManager);
+					viewer.updateTree(workbench, resource, editPluginID, imageManager);
 					break;
 				}
-			}		
+			}
 		}
-			
+
+	}
+
+	@Override
+	public void dispose() {
+		if (listener != null) {
+			ISelectionService selService = getSite().getWorkbenchWindow().getSelectionService();
+			selService.removeSelectionListener(listener);
+
+			listener = null;
+		}
+
+		super.dispose();
 	}
 
 	@Override

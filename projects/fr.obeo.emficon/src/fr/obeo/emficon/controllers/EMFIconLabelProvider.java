@@ -6,8 +6,11 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.ENamedElementImpl;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
 
 import fr.obeo.emficon.models.EMFIcon;
+import fr.obeo.emficon.models.EMFIconUnusedRoot;
 import fr.obeo.emficon.models.ImageManager;
 
 /**
@@ -19,27 +22,34 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 
 	private String iconPath;
 	private ImageManager imageManager;
+	private IWorkbench workbench;
 
-	public EMFIconLabelProvider(AdapterFactory adapterFactory, String iconPath, ImageManager imageManager) {
+	public EMFIconLabelProvider(IWorkbench workbench, AdapterFactory adapterFactory, String iconPath,
+			ImageManager imageManager) {
 		super(adapterFactory);
 		this.iconPath = iconPath;
 		this.imageManager = imageManager;
+		this.workbench = workbench;
 	}
 
 	@Override
 	public String getText(Object element) {
-		if (element instanceof EMFIcon) {
-			EMFIcon emficon = (EMFIcon) element;
+		if (element instanceof EMFIcon emficon) {
 			return emficon.getLabel();
 		}
-		return (super.getText(element).split(":")[0]);
+		if (element instanceof EMFIconUnusedRoot emficonUnusedRoot) {
+			return emficonUnusedRoot.getName();
+		}
+		return (super.getText(element));
 	}
 
 	@Override
 	public Image getImage(Object element) {
-		if (element instanceof EMFIcon) {
-			EMFIcon emficon = (EMFIcon) element;
+		if (element instanceof EMFIcon emficon) {
 			return emficon.getImage();
+		}
+		if (element instanceof EMFIconUnusedRoot emficonUnusedRoot) {
+			return workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP).createImage();
 		}
 		if (element instanceof ENamedElementImpl) {
 			ENamedElement a = (ENamedElementImpl) element;

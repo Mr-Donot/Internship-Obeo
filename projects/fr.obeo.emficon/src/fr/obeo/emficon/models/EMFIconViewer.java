@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbench;
 
 import fr.obeo.emficon.controllers.EMFIconContentProvider;
 import fr.obeo.emficon.controllers.EMFIconLabelProvider;
@@ -52,19 +53,21 @@ public class EMFIconViewer {
 	 * @param editPluginID plugin id of the genmodel.
 	 * @param imageManager image cache.
 	 */
-	public void updateTree(Resource resource, String editPluginID, ImageManager imageManager) {
+	public void updateTree(IWorkbench workbench, Resource resource, String editPluginID, ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
 		imageManager.loadImageMapByFolderPath(pathIcon);
 		EMFIconContainer unusedIcon = new EMFIconContainer(resource, imageManager.getUnusedIcons(resource));
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		EMFIconContentProvider contentProvider = new EMFIconContentProvider(composedAdapterFactory);
-		EMFIconLabelProvider labelProvider = new EMFIconLabelProvider(composedAdapterFactory, pathIcon, imageManager);
+		EMFIconLabelProvider labelProvider = new EMFIconLabelProvider(workbench, composedAdapterFactory, pathIcon,
+				imageManager);
 		tree.setFilters(new ViewerFilter() {
-			
+
 			@Override
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
-				return element instanceof EPackage || (element instanceof EClass && !((EClass) element).isAbstract());
+				return element instanceof EMFIcon || element instanceof EPackage
+						|| (element instanceof EClass && !((EClass) element).isAbstract());
 			}
 		});
 		this.tree.setContentProvider(contentProvider);

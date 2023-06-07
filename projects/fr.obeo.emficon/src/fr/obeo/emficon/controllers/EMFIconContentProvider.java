@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 
 import fr.obeo.emficon.models.EMFIconContainer;
+import fr.obeo.emficon.models.EMFIconUnusedRoot;
 
 /**
  * Extension of the AdapterFactoryContentProvider supporting custom EMIcon.
@@ -24,24 +25,18 @@ public class EMFIconContentProvider extends AdapterFactoryContentProvider {
 		if (object instanceof EMFIconContainer) {
 			EMFIconContainer unusedIcon = (EMFIconContainer) object;
 			int nbUnusedIcon = unusedIcon.unusedIconList().size();
-			Object[] result = new Object[nbUnusedIcon + 1];
+			Object[] result = new Object[nbUnusedIcon + 2];
 			Resource resource = unusedIcon.resource();
 			Object obj = super.getElements(resource)[0];
 			result[0] = obj;
+			EMFIconUnusedRoot emficonUnusedRoot = new EMFIconUnusedRoot("? Unused icon : ");
+			result[1] = emficonUnusedRoot;
 			for (int i = 0; i < nbUnusedIcon; i++) {
-				result[i + 1] = unusedIcon.unusedIconList().get(i);
+				result[i + 2] = unusedIcon.unusedIconList().get(i);
 			}
 			return result;
 		}
 		return null;
-	}
-
-	@Override
-	public Object[] getChildren(Object object) {
-		if (object instanceof EClass) {
-			return new Object[0];
-		}
-		return super.getChildren(object);
 	}
 
 	@Override
