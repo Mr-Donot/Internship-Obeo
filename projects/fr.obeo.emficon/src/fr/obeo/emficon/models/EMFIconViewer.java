@@ -56,7 +56,6 @@ public class EMFIconViewer {
 	public void updateTree(IWorkbench workbench, Resource resource, String editPluginID, ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
 		imageManager.loadImageMapByFolderPath(pathIcon);
-		EMFIconContainer unusedIcon = new EMFIconContainer(resource, imageManager.getUnusedIcons(resource));
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		EMFIconContentProvider contentProvider = new EMFIconContentProvider(composedAdapterFactory);
@@ -66,13 +65,18 @@ public class EMFIconViewer {
 
 			@Override
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
-				return element instanceof EMFIcon || element instanceof EPackage
+				return element instanceof UnusedIconContainer || element instanceof EMFIcon || element instanceof EPackage
 						|| (element instanceof EClass && !((EClass) element).isAbstract());
 			}
 		});
 		this.tree.setContentProvider(contentProvider);
 		this.tree.setLabelProvider(labelProvider);
-		this.tree.setInput(unusedIcon);
+		if (imageManager.getUnusedIcons(resource).size() > 0) {
+			UnusedIconContainer unusedIcons = new UnusedIconContainer(imageManager.getUnusedIcons(resource));			
+			this.tree.setInput(new Object[] { resource, unusedIcons });
+		}else {
+			this.tree.setInput(resource);
+		}
 		this.tree.expandAll();
 		this.tree.refresh();
 	}

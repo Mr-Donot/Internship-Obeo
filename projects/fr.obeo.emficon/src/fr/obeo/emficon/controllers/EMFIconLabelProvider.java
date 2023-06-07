@@ -10,8 +10,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 
 import fr.obeo.emficon.models.EMFIcon;
-import fr.obeo.emficon.models.EMFIconUnusedRoot;
 import fr.obeo.emficon.models.ImageManager;
+import fr.obeo.emficon.models.UnusedIconContainer;
 
 /**
  * Extension of the AdapterFactoryLabelProvider supporting custom EMIcon.
@@ -37,8 +37,8 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 		if (element instanceof EMFIcon emficon) {
 			return emficon.getLabel();
 		}
-		if (element instanceof EMFIconUnusedRoot emficonUnusedRoot) {
-			return emficonUnusedRoot.getName();
+		if (element instanceof UnusedIconContainer emficonUnusedRoot) {
+			return "Unused icons";
 		}
 		return (super.getText(element));
 	}
@@ -48,7 +48,7 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 		if (element instanceof EMFIcon emficon) {
 			return emficon.getImage();
 		}
-		if (element instanceof EMFIconUnusedRoot emficonUnusedRoot) {
+		if (element instanceof UnusedIconContainer) {
 			return workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP).createImage();
 		}
 		if (element instanceof ENamedElementImpl) {
