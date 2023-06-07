@@ -13,6 +13,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
 
 /**
  * Image cache.
@@ -22,8 +24,14 @@ import org.eclipse.swt.graphics.ImageData;
 public class ImageManager {
 
 	private Map<String, EMFIcon> imageMap = new HashMap<String, EMFIcon>();
+
 	private ArrayList<String> arrayFilesPath = new ArrayList<String>();
 	private Resource actualResource;
+	private IWorkbench workbench;
+
+	public ImageManager(IWorkbench workbench) {
+		this.workbench = workbench;
+	}
 
 	/**
 	 * load all the images on the input folder, if they are already in the map,
@@ -37,13 +45,13 @@ public class ImageManager {
 		String pathIcon;
 		for (int i = 0; i < arrayFilesPath.size(); i++) {
 			pathIcon = arrayFilesPath.get(i);
-			EMFIcon emficon = this.imageMap.computeIfAbsent(pathIcon, s -> createImage(s));
+			EMFIcon emficon = this.imageMap.computeIfAbsent(pathIcon, s -> createEMFIcon(s));
 			this.imageMap.put(pathIcon, emficon);
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	public EMFIcon createImage(String pathIcon) {
+	public EMFIcon createEMFIcon(String pathIcon) {
 		ImageData imageData = new ImageData(pathIcon);
 		ImageDescriptor imageDescriptor = ImageDescriptor.createFromImageData(imageData);
 		Image image = imageDescriptor.createImage();
@@ -123,7 +131,7 @@ public class ImageManager {
 					beUsed = true;
 				}
 			}
-			if (!beUsed) {
+			if (!beUsed && !pair.getValue().getPath().equals("UnusedIconBranch")) {
 				result.add(pair.getValue());
 			}
 		}
@@ -149,8 +157,29 @@ public class ImageManager {
 		for (int i = 0; i < unusedIconsList.size(); i++) {
 			File myObj = new File(unusedIconsList.get(i).getPath());
 			myObj.delete();
+			this.imageMap.get(unusedIconsList.get(i).getPath()).getImage().dispose();
 			this.imageMap.remove(unusedIconsList.get(i).getPath());
 			this.arrayFilesPath.remove(unusedIconsList.get(i).getPath());
 		}
 	}
+
+	public Image getUnusedIconBranch() {
+		this.imageMap.put("UnusedIconBranch",
+				this.imageMap.computeIfAbsent("UnusedIconBranch", s -> createUnusedIconBranch(s)));
+		return imageMap.get("UnusedIconBranch").getImage();
+	}
+
+	private EMFIcon createUnusedIconBranch(String s) {
+		return new EMFIcon(s,
+				workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP).createImage());
+	}
+
+	public Map<String, EMFIcon> getImageMap() {
+		return imageMap;
+	}
+
+	public void setImageMap(Map<String, EMFIcon> imageMap) {
+		this.imageMap = imageMap;
+	}
+
 }

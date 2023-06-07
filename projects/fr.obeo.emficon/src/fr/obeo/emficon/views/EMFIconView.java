@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
@@ -42,6 +43,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import fr.obeo.emficon.models.EMFIcon;
 import fr.obeo.emficon.models.EMFIconViewer;
 import fr.obeo.emficon.models.ImageManager;
 
@@ -78,7 +80,7 @@ public class EMFIconView extends ViewPart {
 	private IWorkspace workspace = ResourcesPlugin.getWorkspace();
 	private IWorkspaceRoot root = workspace.getRoot();
 	private EMFIconViewer viewer;
-	private ImageManager imageManager = new ImageManager();
+	private ImageManager imageManager = new ImageManager(workbench);
 	private String actualEcorePath = "";
 	private ISelectionListener listener;
 
@@ -185,7 +187,9 @@ public class EMFIconView extends ViewPart {
 
 		refreshViewAction = new Action() {
 			public void run() {
-				updateView(actualEcorePath);
+				if (!actualEcorePath.equals("")) {
+					updateView(actualEcorePath);
+				}
 			}
 		};
 		refreshViewAction.setText("Refresh View");
@@ -223,7 +227,6 @@ public class EMFIconView extends ViewPart {
 		dialog.setElements(itemsList.toArray(new String[0]));
 		dialog.setTitle("Which metamodel you want to display ?");
 		dialog.open();
-
 		return dialog;
 	}
 
@@ -268,7 +271,7 @@ public class EMFIconView extends ViewPart {
 	 */
 	public void updateView(String ecorePath) {
 		actualEcorePath = ecorePath;
-		imageManager = new ImageManager();
+		imageManager = new ImageManager(workbench);
 		mapEcoreGenModel = viewer.getEcorePaths();
 		Resource resource = createResourceFromEcorePath(ecorePath);
 		IProject[] projectList = root.getProjects();
@@ -293,11 +296,17 @@ public class EMFIconView extends ViewPart {
 		if (listener != null) {
 			ISelectionService selService = getSite().getWorkbenchWindow().getSelectionService();
 			selService.removeSelectionListener(listener);
-
 			listener = null;
 		}
-
 		super.dispose();
+		for (Map.Entry<String, EMFIcon> entry : imageManager.getImageMap().entrySet()) {
+
+			EMFIcon emficon = entry.getValue();
+			Image image = emficon.getImage();
+			if (image != null && !image.isDisposed()) {
+				image.dispose();
+			}
+		}
 	}
 
 	@Override

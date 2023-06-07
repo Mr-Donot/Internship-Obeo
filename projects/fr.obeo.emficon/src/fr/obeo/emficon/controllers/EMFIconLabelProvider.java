@@ -6,8 +6,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.ENamedElementImpl;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbench;
 
 import fr.obeo.emficon.models.EMFIcon;
 import fr.obeo.emficon.models.ImageManager;
@@ -22,14 +20,11 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 
 	private String iconPath;
 	private ImageManager imageManager;
-	private IWorkbench workbench;
 
-	public EMFIconLabelProvider(IWorkbench workbench, AdapterFactory adapterFactory, String iconPath,
-			ImageManager imageManager) {
+	public EMFIconLabelProvider(AdapterFactory adapterFactory, String iconPath, ImageManager imageManager) {
 		super(adapterFactory);
 		this.iconPath = iconPath;
 		this.imageManager = imageManager;
-		this.workbench = workbench;
 	}
 
 	@Override
@@ -49,7 +44,7 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 			return emficon.getImage();
 		}
 		if (element instanceof UnusedIconContainer) {
-			return workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP).createImage();
+			return imageManager.getUnusedIconBranch();
 		}
 		if (element instanceof ENamedElementImpl) {
 			ENamedElement a = (ENamedElementImpl) element;

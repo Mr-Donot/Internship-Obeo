@@ -59,22 +59,22 @@ public class EMFIconViewer {
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		EMFIconContentProvider contentProvider = new EMFIconContentProvider(composedAdapterFactory);
-		EMFIconLabelProvider labelProvider = new EMFIconLabelProvider(workbench, composedAdapterFactory, pathIcon,
-				imageManager);
+		EMFIconLabelProvider labelProvider = new EMFIconLabelProvider(composedAdapterFactory, pathIcon, imageManager);
 		tree.setFilters(new ViewerFilter() {
 
 			@Override
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
-				return element instanceof UnusedIconContainer || element instanceof EMFIcon || element instanceof EPackage
+				return element instanceof UnusedIconContainer || element instanceof EMFIcon
+						|| element instanceof EPackage
 						|| (element instanceof EClass && !((EClass) element).isAbstract());
 			}
 		});
 		this.tree.setContentProvider(contentProvider);
 		this.tree.setLabelProvider(labelProvider);
 		if (imageManager.getUnusedIcons(resource).size() > 0) {
-			UnusedIconContainer unusedIcons = new UnusedIconContainer(imageManager.getUnusedIcons(resource));			
+			UnusedIconContainer unusedIcons = new UnusedIconContainer(imageManager.getUnusedIcons(resource));
 			this.tree.setInput(new Object[] { resource, unusedIcons });
-		}else {
+		} else {
 			this.tree.setInput(resource);
 		}
 		this.tree.expandAll();
