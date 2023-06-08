@@ -40,20 +40,21 @@ public class EMFIconLabelProvider extends AdapterFactoryLabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
+		Image result = (element instanceof EPackage) ? super.getImage(element) : null;
 		if (element instanceof EMFIcon emficon) {
-			return emficon.getImage();
+			result = emficon.getImage();
 		}
 		if (element instanceof UnusedIconContainer) {
-			return imageManager.getUnusedIconBranch();
+			result = imageManager.getUnusedIconBranch();
 		}
 		if (element instanceof ENamedElementImpl) {
 			ENamedElement a = (ENamedElementImpl) element;
 			String pathIcon = this.iconPath + a.getName() + ".gif";
 			if (imageManager.getArrayFilesPath().contains(pathIcon)) {
-				return imageManager.getImage(pathIcon);
+				result = imageManager.getImage(pathIcon);
 			}
 		}
-		return (element instanceof EPackage) ? super.getImage(element) : null;
+		return result;
 	}
 
 }

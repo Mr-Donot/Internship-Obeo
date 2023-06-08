@@ -57,8 +57,9 @@ public class EMFIconViewer {
 	public void updateTree(boolean otherEMF, IWorkbench workbench, Resource resource, String editPluginID,
 			ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
-		if (otherEMF)
-			imageManager.disposeImageManager();
+		if (otherEMF) {
+			imageManager.disposeImageManager();			
+		}
 		imageManager.loadImageMapByFolderPath(pathIcon);
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);

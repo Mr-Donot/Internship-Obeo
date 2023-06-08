@@ -144,20 +144,6 @@ public class ImageManager {
 		return result;
 	}
 
-	public void display() {
-		System.out.println("===========DISPLAY IMAGE MANAGER===========");
-		System.out.println("List of files : \n");
-		for (int i = 0; i < this.arrayFilesPath.size(); i++) {
-			System.out.println(i + " : " + this.arrayFilesPath.get(i));
-		}
-		System.out.println("-------------------------------------------");
-		System.out.println("image map : \n");
-		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
-			System.out.println(pair.getKey() + " |--> " + pair.getValue());
-		}
-		System.out.println("===========================================");
-	}
-
 	public void deleteUnusedIcons(String actualEcorePath) {
 		ArrayList<EMFIcon> unusedIconsList = this.getUnusedIcons(this.actualResource);
 		for (int i = 0; i < unusedIconsList.size(); i++) {
