@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 
@@ -53,8 +54,11 @@ public class EMFIconViewer {
 	 * @param editPluginID plugin id of the genmodel.
 	 * @param imageManager image cache.
 	 */
-	public void updateTree(IWorkbench workbench, Resource resource, String editPluginID, ImageManager imageManager) {
+	public void updateTree(boolean otherEMF, IWorkbench workbench, Resource resource, String editPluginID,
+			ImageManager imageManager) {
 		String pathIcon = root.getLocation() + "/" + editPluginID + "/icons/full/obj16/";
+		if (otherEMF)
+			imageManager.disposeImageManager();
 		imageManager.loadImageMapByFolderPath(pathIcon);
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
@@ -75,10 +79,19 @@ public class EMFIconViewer {
 			UnusedIconContainer unusedIcons = new UnusedIconContainer(imageManager.getUnusedIcons(resource));
 			this.tree.setInput(new Object[] { resource, unusedIcons });
 		} else {
+			disposeUnusedIconImage(imageManager);
 			this.tree.setInput(resource);
 		}
 		this.tree.expandAll();
 		this.tree.refresh();
+	}
+
+	public void disposeUnusedIconImage(ImageManager imageManager) {
+
+		Image image = imageManager.getImage("UnusedIconBranch");
+		if (image != null && !image.isDisposed()) {
+			image.dispose();
+		}
 	}
 
 	public TreeViewer getTree() {

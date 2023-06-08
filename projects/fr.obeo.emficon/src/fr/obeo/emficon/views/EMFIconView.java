@@ -100,12 +100,11 @@ public class EMFIconView extends ViewPart {
 				if (sourcepart != this && selection instanceof IStructuredSelection) {
 					List<?> selectionList = ((IStructuredSelection) selection).toList();
 					if (!selectionList.isEmpty()) {
-						// case : ecore file selected
 						if (selectionList.get(0) instanceof IFile) {
 							IFile selectedFile = (IFile) selectionList.get(0);
 							if (selectedFile.getFileExtension().equals("ecore")) {
-								// format needed : /webpage/model/webpage.ecore
 								updateView(selectedFile.getFullPath().toString());
+
 							}
 						}
 					}
@@ -166,7 +165,9 @@ public class EMFIconView extends ViewPart {
 
 		cleanIconsAction = new Action() {
 			public void run() {
-				cleanIconMsgBox(parent);
+				if (imageManager.getUnusedIcons(createResourceFromEcorePath(actualEcorePath)).size() > 0) {
+					cleanIconMsgBox(parent);
+				}
 			}
 		};
 		cleanIconsAction.setText("Clean unused icons");
@@ -270,8 +271,9 @@ public class EMFIconView extends ViewPart {
 	 * @param ecorePath the ecore file's path choosen in the selection dialog.
 	 */
 	public void updateView(String ecorePath) {
+		imageManager.setWorkbench(workbench);
+		boolean otherEMF = !actualEcorePath.equals(ecorePath);
 		actualEcorePath = ecorePath;
-		imageManager = new ImageManager(workbench);
 		mapEcoreGenModel = viewer.getEcorePaths();
 		Resource resource = createResourceFromEcorePath(ecorePath);
 		IProject[] projectList = root.getProjects();
@@ -284,7 +286,7 @@ public class EMFIconView extends ViewPart {
 				File genmodelFile = mapEcoreGenModel.get(ecorePath);
 				String editPluginID = viewer.getEditByFile(genmodelFile, resource);
 				if (editPluginID != "") {
-					viewer.updateTree(workbench, resource, editPluginID, imageManager);
+					viewer.updateTree(otherEMF, workbench, resource, editPluginID, imageManager);
 					break;
 				}
 			}
@@ -306,6 +308,7 @@ public class EMFIconView extends ViewPart {
 			if (image != null && !image.isDisposed()) {
 				image.dispose();
 			}
+			imageManager.disposeImageManager();
 		}
 	}
 

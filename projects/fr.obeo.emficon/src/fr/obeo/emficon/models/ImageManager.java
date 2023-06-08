@@ -24,7 +24,6 @@ import org.eclipse.ui.IWorkbench;
 public class ImageManager {
 
 	private Map<String, EMFIcon> imageMap = new HashMap<String, EMFIcon>();
-
 	private ArrayList<String> arrayFilesPath = new ArrayList<String>();
 	private Resource actualResource;
 	private IWorkbench workbench;
@@ -69,9 +68,16 @@ public class ImageManager {
 	private void loadFiles(File file) {
 		if (!file.equals(null)) {
 			File files[];
-			if (file.isFile())
-				arrayFilesPath.add(file.getAbsolutePath().replace("\\", "/"));
-			else {
+			if (file.isFile()) {
+				boolean alreadyInList = false;
+				for (int i = 0; i < arrayFilesPath.size(); i++) {
+					if (arrayFilesPath.get(i).equals(file.getAbsolutePath().replace("\\", "/"))) {
+						alreadyInList = true;
+					}
+				}
+				if (!alreadyInList)
+					arrayFilesPath.add(file.getAbsolutePath().replace("\\", "/"));
+			} else {
 				files = file.listFiles();
 				for (int i = 0; i < files.length; i++) {
 					loadFiles(files[i]);
@@ -97,7 +103,7 @@ public class ImageManager {
 	public Image getImage(String s) {
 		for (Map.Entry<String, EMFIcon> pair : this.imageMap.entrySet()) {
 			if (pair.getKey().equals(s)) {
-				return imageMap.get(s).getImage();
+				return pair.getValue().getImage();
 			}
 		}
 		return null;
@@ -164,6 +170,11 @@ public class ImageManager {
 	}
 
 	public Image getUnusedIconBranch() {
+		if (!(imageMap.get("UnusedIconBranch") == null) && imageMap.get("UnusedIconBranch").getImage().isDisposed()) {
+			this.imageMap.put("UnusedIconBranch", new EMFIcon("UnusedIconBranch",
+					workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP).createImage()));
+			return this.imageMap.get("UnusedIconBranch").getImage();
+		}
 		this.imageMap.put("UnusedIconBranch",
 				this.imageMap.computeIfAbsent("UnusedIconBranch", s -> createUnusedIconBranch(s)));
 		return imageMap.get("UnusedIconBranch").getImage();
@@ -180,6 +191,26 @@ public class ImageManager {
 
 	public void setImageMap(Map<String, EMFIcon> imageMap) {
 		this.imageMap = imageMap;
+	}
+
+	public void disposeImageManager() {
+		for (Map.Entry<String, EMFIcon> entry : this.getImageMap().entrySet()) {
+			EMFIcon emficon = entry.getValue();
+			Image image = emficon.getImage();
+			if (image != null && !image.isDisposed()) {
+				image.dispose();
+			}
+		}
+		this.imageMap = new HashMap<String, EMFIcon>();
+		this.arrayFilesPath = new ArrayList<String>();
+	}
+
+	public IWorkbench getWorkbench() {
+		return workbench;
+	}
+
+	public void setWorkbench(IWorkbench workbench) {
+		this.workbench = workbench;
 	}
 
 }
